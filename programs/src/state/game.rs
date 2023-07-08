@@ -6,8 +6,10 @@ pub struct Game {
     result: u8,
     bump: u8,
     title: String,
+    rate: u64,
+    seed: u64,
 }
 
 impl Game {
-    pub const LEN:usize = 8 + 8 + 32 + 1 + 1;
+    pub const LEN:usize = 8 + 8 + 32 + 1 + 1 ;
 }

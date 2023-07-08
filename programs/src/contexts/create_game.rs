@@ -23,3 +23,15 @@ pub struct CreateGame<'info> {
     pub creator: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
+
+impl<'info> CreateGame<'info> {
+    pub fn init(&mut self, bumps: &BTreeMap<String, u8>, seed: u64, amount: u64) -> Result<()> {
+        let game = &mut self.game;
+        game.creator = *self.creator.key;
+        game.creator_token = *self.creator_token.to_account_info().key;
+        game.seed = seed;
+        game.auth_bump = *bumps.get("auth").unwrap();
+        game.vault_bump = *bumps.get("vault").unwrap();
+        game.amount = amount;
+    }
+}
