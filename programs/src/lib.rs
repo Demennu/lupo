@@ -19,6 +19,10 @@ mod hello_anchor {
 
     use super::*;
 
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        unimplemented!()
+    }
+
     pub fn create_game(ctx: Context<CreateGame>, title: String, seed: u64, id: u64) -> Result<()> {
         require!(title.len() < 33);
         ctx.accounts.game.id = id;
@@ -39,7 +43,7 @@ mod hello_anchor {
         ctx.accounts.game.result = result;
         // should move this to an external function that return a vault type depending on the result
         let winning_amount = if result == 0 {
-            ctx.accounts.game.vault_tie.amount 
+            ctx.accounts.game.vault_tie.amount
         }
         else if result == 1 {
             ctx.accounts.game.vault_win.amount
@@ -84,7 +88,7 @@ mod hello_anchor {
         let winning_amount = ctx.accounts.game.rate * ctx.accounts.prediction.amount;
 
         // update variable saying that the user already claimed
-        
+
         ctx.accounts.prediction.player.transfer_to_player(winning_amount)
 
 

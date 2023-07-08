@@ -1,24 +1,68 @@
-use std::{collections::BTreeMap};
+use std::collections::BTreeMap;
 
 use anchor_lang::prelude::*;
-use anchor_spl::{token::{Mint, TokenAccount, Token, Transfer, transfer}, associated_token::AssociatedToken};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
+};
 
-use crate::{state::{Game, Prediction, Vault}, errors::PredictionError};
+use crate::{
+    errors::PredictionError,
+    state::{Game, Prediction, Vault},
+};
 
 #[derive(Accounts)]
 #[instruction(id: u64)]
 pub struct CreateGame<'info> {
     #[account(
-        init, 
+        init,
         seeds = [
-            creator.key().as_ref(), 
+            creator.key().as_ref(),
             id.to_le_bytes().as_ref()
-        ], 
-        payer = creator, 
-        bump, 
+        ],
+        payer = creator,
+        bump,
         space = Game::LEN
     )]
     pub game: Account<'info, Game>,
+    #[account(seeds = [b"auth", vault_state.key().as_ref()], bump)]
+    pub auth: UncheckedAccount<'info>,
+    #[account(
+        init,
+        payer = creator,
+        seeds = [
+            b"vault_lose",
+            game.key().as_ref(),
+            ID.as_ref(),
+            mint.key().as_ref(),
+        ]
+    )]
+    pub vault_lose: Account<'info, TokenAccount>,
+    #[account(
+        init,
+        payer = creator,
+        seeds = [
+            b"vault_win",
+            game.key().as_ref(),
+            ID.as_ref(),
+            mint.key().as_ref(),
+        ]
+    )]
+    pub vault_win: Account<'info, TokenAccount>,
+    #[account(
+        init,
+        payer = creator,
+        seeds = [
+            b"vault_tie",
+            game.key().as_ref(),
+            ID.as_ref(),
+            mint.key().as_ref(),
+        ],
+        bump
+    )]
+    pub vault_tie: Account<'info, TokenAccount>,
+    pub usdc_mint: Accunt<'info, Mint>,
+
     #[account(mut)]
     pub creator: Signer<'info>,
     pub system_program: Program<'info, System>,
